@@ -453,6 +453,15 @@ inline Tree unquote(char* str)
     //----------------------------------------------
 }
 
+inline Tree importOrPackage(Tree filename)
+{
+    if (gGlobal->gPackageImportFlag) {
+        gGlobal->gPackageImportFlag = false;
+        return packageFile(filename);
+    }
+    return importFile(filename);
+}
+
 
 
 /* Enabling traces.  */
@@ -2332,7 +2341,7 @@ yyreduce:
 
   case 23:
 #line 400 "faustparser.y"
-    { (yyval.exp) = importFile((yyvsp[(3) - (5)].exp)); ;}
+    { (yyval.exp) = importOrPackage((yyvsp[(3) - (5)].exp)); ;}
     break;
 
   case 24:

@@ -1,0 +1,12 @@
+// Helpers for the x package
+
+import("stdfaust.lib");
+
+// TODO: this should be rewritten with the pink noise function of noises.lib
+x_pink = f : (+ ~ g) with {
+    f(x) = 0.04957526213389*x - 0.06305581334498*x' + 0.01483220320740*x'';
+    g(x) = 1.80116083982126*x - 0.80257737639225*x';
+};
+
+// Convert dB to linear with a light smoothing stage.
+x_gain_db(db) = db : ba.db2linear : si.smoo;

@@ -98,6 +98,15 @@ inline Tree unquote(char* str)
     //----------------------------------------------
 }
 
+inline Tree importOrPackage(Tree filename)
+{
+    if (gGlobal->gPackageImportFlag) {
+        gGlobal->gPackageImportFlag = false;
+        return packageFile(filename);
+    }
+    return importFile(filename);
+}
+
 %}
 
 %union {
@@ -397,7 +406,7 @@ number          : INT                           { $$ = boxInt(str2int(FAUSTtext)
                 | SUB FLOAT                     { $$ = boxReal(-atof(FAUSTtext)); }                
                 ;
                             
-statement       : IMPORT LPAR uqstring RPAR ENDDEF           { $$ = importFile($3); }
+statement       : IMPORT LPAR uqstring RPAR ENDDEF           { $$ = importOrPackage($3); }
                 | DECLARE name string  ENDDEF                { declareMetadata($2,$3); $$ = gGlobal->nil; }
                 | DECLARE name name string  ENDDEF           { declareDefinitionMetadata($2,$3,$4); $$ = gGlobal->nil; }
                 | definition                                 { $$ = $1; }

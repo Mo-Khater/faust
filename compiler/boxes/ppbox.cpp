@@ -420,6 +420,8 @@ ostream& boxpp::print(ostream& fout) const
         fout << boxpp(t1) << '.' << boxpp(t2);
     } else if (isImportFile(fBox, label)) {
         fout << "import(" << tree2quotedstr(label) << ')';
+    } else if (isPackageFile(fBox, label)) {
+        fout << "package(" << tree2quotedstr(label) << ')';
     } else if (isBoxSlot(fBox, &id)) {
         // fout << "#" << id;
         fout << "x" << id;
@@ -690,6 +692,8 @@ ostream& boxppShared::print(ostream& fout) const
         fout << boxppShared(t1) << '.' << boxppShared(t2);
     } else if (isImportFile(fBox, label)) {
         fout << "import(" << tree2quotedstr(label) << ')';
+    } else if (isPackageFile(fBox, label)) {
+        fout << "package(" << tree2quotedstr(label) << ')';
     } else if (isBoxSlot(fBox, &id)) {
         // fout << "#" << id;
         fout << "x" << id;

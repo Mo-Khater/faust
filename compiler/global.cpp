@@ -294,6 +294,7 @@ global::global()
     BOXCOMPONENT     = symbol("BoxComponent");
     BOXLIBRARY       = symbol("BoxLibrary");
     IMPORTFILE       = symbol("ImportFile");
+    PACKAGEFILE      = symbol("PackageFile");
     BOXPRIM0         = symbol("BoxPrim0");
     BOXPRIM1         = symbol("BoxPrim1");
     BOXPRIM2         = symbol("BoxPrim2");
@@ -419,6 +420,7 @@ void global::reset()
 
     gResult          = nullptr;
     gExpandedDefList = nullptr;
+    gPackageImportFlag = false;
 
     gDetailsSwitch    = false;
     gDrawSignals      = false;

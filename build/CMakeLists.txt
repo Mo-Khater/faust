@@ -342,6 +342,9 @@ if (INCLUDE_ITP OR ITPDYNAMIC)
     set (SUBTARGETS ${SUBTARGETS} faustmachine)
 endif()
 
+# faustpkg CLI tool
+add_subdirectory (../tools/faustpkg faustpkg)
+
 ####################################
 # install section
 ####################################
@@ -364,6 +367,10 @@ install ( TARGETS ${INSTALL_TARGETS}
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/${LIBSDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/${LIBSDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/faust
+)
+
+install ( TARGETS faustpkg
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 )
 
 if (INCLUDE_DYNAMIC)

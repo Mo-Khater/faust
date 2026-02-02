@@ -98,6 +98,7 @@ struct global {
     std::list<std::string> gInputFiles;
     tvec gWaveForm;  // used in the parser to keep values parsed for a given waveform
     Tree gResult;
+    bool gPackageImportFlag;  // set by lexer when "package" keyword is used
 
     // Metadata handling
     MetaDataSet gMetaDataSet;
@@ -397,6 +398,7 @@ struct global {
     Sym BOXCOMPONENT;
     Sym BOXLIBRARY;
     Sym IMPORTFILE;
+    Sym PACKAGEFILE;
     Sym BOXPRIM0;
     Sym BOXPRIM1;
     Sym BOXPRIM2;

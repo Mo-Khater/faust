@@ -1190,20 +1190,6 @@ static void generateOutputFiles()
 
 static void expandDSPInternalAux(Tree process_tree, int argc, const char* argv[], ostream& out)
 {
-    // Encode compilation options as a 'declare' : has to be located first in the string
-    out << "declare version \"" << FAUSTVERSION << "\";" << endl;
-    out << COMPILATION_OPTIONS << reorganizeCompilationOptions(argc, argv) << ';' << endl;
-
-    // Encode all libraries paths as 'declare'
-    vector<string> pathnames = gGlobal->gReader.listSrcFiles();
-    // Remove DSP filename
-    pathnames.erase(pathnames.begin());
-    int i = 0;
-    for (const auto& it : pathnames) {
-        out << "declare library_path" << to_string(i++) << " \"" << it << "\";" << endl;
-    }
-
-    gGlobal->printDeclareHeader(out);
     boxppShared(process_tree, out);
 }
 

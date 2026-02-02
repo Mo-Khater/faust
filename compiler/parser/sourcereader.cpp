@@ -47,6 +47,7 @@
 #include "exception.hh"
 #include "global.hh"
 #include "Text.hh"
+#include "exepath.hh"
 
 using namespace std;
 
@@ -178,7 +179,7 @@ static Tree addFunctionMetadata(Tree ldef, FunMDSet& M)
         Tree fname;
         if (isNil(def)) {
             // skip null definitions produced by declarations
-        } else if (isImportFile(def, fname)) {
+        } else if (isImportFile(def, fname) || isPackageFile(def, fname)) {
             lresult = cons(def, lresult);
         } else {
             Tree foo = hd(def);
@@ -213,6 +214,32 @@ void SourceReader::checkName()
 
 inline bool isURL(const char* name) { return (strstr(name, "http://") != 0) || (strstr(name, "https://") != 0); }
 inline bool isFILE(const char* name) { return strstr(name, "file://") != 0; }
+
+static string resolvePackagePath(const char* pkg)
+{
+    string root = gGlobal->gFaustRootDir;
+    if (root.empty()) {
+        root = ".";
+    }
+    auto ends_with = [](const string& s, const string& suffix) {
+        return s.size() >= suffix.size() &&
+               s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0;
+    };
+    if (ends_with(root, "/build") || ends_with(root, "\\build")) {
+        root = exepath::dirup(root);
+    }
+    const string entry = "package.dsp";
+    string path = root;
+    if (!path.empty() && path.back() != '/' && path.back() != '\\') {
+        path += '/';
+    }
+    path += "faust-packages";
+    path += '/';
+    path += pkg;
+    path += '/';
+    path += entry;
+    return path;
+}
 
 Tree SourceReader::parseFile(const char* fname)
 {
@@ -406,12 +433,12 @@ Tree SourceReader::expandRec(Tree ldef, set<string>& visited, Tree lresult)
 		Tree fname;
 		if (isNil(d)) {
 			// skill null definitions produced by declarations
-		} else if (isImportFile(d, fname)) {
-			const char* f = tree2str(fname);
-			if (visited.find(f) == visited.end()) {
-				visited.insert(f);
-				lresult = expandRec(getList(f), visited, lresult);
-			}
+		} else if (isImportFile(d, fname) || isPackageFile(d, fname)) {
+            string resolved = isPackageFile(d, fname) ? resolvePackagePath(tree2str(fname)) : tree2str(fname);
+            if (visited.find(resolved) == visited.end()) {
+                visited.insert(resolved);
+                lresult = expandRec(getList(resolved.c_str()), visited, lresult);
+            }
 		} else {
 			lresult = cons(d, lresult);
 		}
@@ -443,7 +470,7 @@ Tree formatDefinitions(Tree rldef)
     while (!isNil(rldef)) {
         Tree def = hd(rldef);
         rldef = tl(rldef);
-        if (isImportFile(def, file)) {
+        if (isImportFile(def, file) || isPackageFile(def, file)) {
             ldef2 = cons(def,ldef2);
         } else if (!isNil(def)) {
             //cout << " def : " << *def << endl;

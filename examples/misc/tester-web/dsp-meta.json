@@ -1,0 +1,118 @@
+{
+    "name": "tester_expanded",
+    "filename": "tester_expanded",
+    "version": "2.84.3",
+    "compile_options": "-lang wasm-i -fpga-mem-th 4 -ct 1 -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 2",
+    "include_pathnames": [
+        "/faust/user/inc1",
+        "/faust/user/inc0",
+        "/share/faust",
+        "/usr/local/share/faust",
+        "/usr/share/faust",
+        "."
+    ],
+    "size": 262260,
+    "code": "6Ji2",
+    "inputs": 0,
+    "outputs": 8,
+    "meta": [
+        {
+            "compile_options": "-lang wasm-i -fpga-mem-th 4 -ct 1 -es 1 -mcd 16 -mdd 1024 -mdy 33 -single -ftz 2"
+        },
+        {
+            "filename": "tester_expanded"
+        },
+        {
+            "name": "tester_expanded"
+        }
+    ],
+    "ui": [
+        {
+            "type": "vgroup",
+            "label": "Audio Tester",
+            "items": [
+                {
+                    "type": "hslider",
+                    "label": "freq",
+                    "varname": "fHslider2",
+                    "shortname": "freq",
+                    "address": "/Audio_Tester/freq",
+                    "index": 262192,
+                    "meta": [
+                        {
+                            "1": ""
+                        },
+                        {
+                            "unit": "Hz"
+                        }
+                    ],
+                    "init": 1000,
+                    "min": 10,
+                    "max": 20000,
+                    "step": 1
+                },
+                {
+                    "type": "hslider",
+                    "label": "volume",
+                    "varname": "fHslider1",
+                    "shortname": "volume",
+                    "address": "/Audio_Tester/volume",
+                    "index": 262160,
+                    "meta": [
+                        {
+                            "2": ""
+                        },
+                        {
+                            "unit": "dB"
+                        }
+                    ],
+                    "init": -96,
+                    "min": -96,
+                    "max": 0,
+                    "step": 1
+                },
+                {
+                    "type": "hslider",
+                    "label": "destination",
+                    "varname": "fHslider0",
+                    "shortname": "destination",
+                    "address": "/Audio_Tester/destination",
+                    "index": 262144,
+                    "meta": [
+                        {
+                            "3": ""
+                        }
+                    ],
+                    "init": 0,
+                    "min": 0,
+                    "max": 8,
+                    "step": 1
+                },
+                {
+                    "type": "checkbox",
+                    "label": "pink noise",
+                    "varname": "fCheckbox2",
+                    "shortname": "pink_noise",
+                    "address": "/Audio_Tester/pink_noise",
+                    "index": 262228
+                },
+                {
+                    "type": "checkbox",
+                    "label": "sine wave",
+                    "varname": "fCheckbox0",
+                    "shortname": "sine_wave",
+                    "address": "/Audio_Tester/sine_wave",
+                    "index": 262184
+                },
+                {
+                    "type": "checkbox",
+                    "label": "white noise",
+                    "varname": "fCheckbox1",
+                    "shortname": "white_noise",
+                    "address": "/Audio_Tester/white_noise",
+                    "index": 262204
+                }
+            ]
+        }
+    ]
+}

@@ -330,6 +330,9 @@ LIBFAUST_API bool isBoxLibrary(Tree s, Tree& filename);
 Tree importFile(Tree filename);
 bool isImportFile(Tree s, Tree& filename);
 
+Tree packageFile(Tree name);
+bool isPackageFile(Tree s, Tree& name);
+
 /*****************************************************************************
                              User Interface Elements
 *****************************************************************************/

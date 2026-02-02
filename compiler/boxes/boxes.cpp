@@ -584,6 +584,15 @@ bool isImportFile(Tree s, Tree& filename)
     return isTree(s, gGlobal->IMPORTFILE, filename);
 }
 
+Tree packageFile(Tree name)
+{
+    return tree(gGlobal->PACKAGEFILE, name);
+}
+bool isPackageFile(Tree s, Tree& name)
+{
+    return isTree(s, gGlobal->PACKAGEFILE, name);
+}
+
 /*****************************************************************************
                             External Primitive Boxes (n -> 1)
 *****************************************************************************/

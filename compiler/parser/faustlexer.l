@@ -5,6 +5,7 @@
 %{
 #include "tree.hh"
 #include "faustparser.hpp"
+#include "global.hh"
 #if defined(WIN32)
 #if !defined(__MINGW32__) && !defined(__MSYS__)
 // We don't want to include compatibility.hh here, since it pulls in whole lot
@@ -204,6 +205,7 @@ NSID     {ID}("::"{ID})*
 "outputs"     return OUTPUTS;
 
 "import"      return IMPORT;
+"package"     { gGlobal->gPackageImportFlag = true; return IMPORT; }
 "component"   return COMPONENT;
 "library"     return LIBRARY;
 "environment" return ENVIRONMENT;
