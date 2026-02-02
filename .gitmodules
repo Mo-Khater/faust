@@ -25,3 +25,7 @@
 [submodule "external/clap-sdk"]
 	path = external/clap-sdk
 	url = https://github.com/free-audio/clap.git
+[submodule "examples/misc/faustwasm"]
+    path = examples/misc/faustwasm
+    url = https://github.com/grame-cncm/faustwasm.git
+

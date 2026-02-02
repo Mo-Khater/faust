@@ -1,7 +1,7 @@
 // x package public API
 
 import("stdfaust.lib");
-import("helpers.lib");
+import("src/helpers.lib");
 
 // Basic test signal builder using explicit switches.
 x_test_signal(freq, sine_on, white_on, pink_on) =

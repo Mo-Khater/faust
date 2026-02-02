@@ -9,7 +9,7 @@
 namespace fs = std::filesystem;
 
 static const char* base  = "https://github.com";
-static const char* owner = "Mo-Khater";
+static const char* owner = "faust-packages";
 
 struct PkgSpec {
     std::string name;
@@ -19,31 +19,27 @@ struct PkgSpec {
 static void print_available_services()
 {
     std::cout
-        << "faustpkg install <name==version> [--repo <owner/repo>] [--cache <path>]\n"
-        << "faustpkg list [--cache <path>]\n"
-        << "faustpkg remove <name==version> [--cache <path>]\n";
+        << "faustpkg install <name==version>\n"
+        << "faustpkg list\n"
+        << "faustpkg remove <name==version>\n";
 }
 
-static bool split_spec(const std::string& spec, PkgSpec& out)
+
+
+
+static bool split_spec(const std::string&spec,PkgSpec&out)
 {
-    const std::string sep = "==";
-    size_t pos = spec.find(sep);
-    if (pos == std::string::npos || pos == 0 || pos + sep.size() >= spec.size()) {
+    size_t pos = spec.find("==");
+    if (pos == std::string::npos || pos == 0 || pos + 2 >= spec.size()) {
         return false;
     }
     out.name = spec.substr(0, pos);
-    out.version = spec.substr(pos + sep.size());
+    out.version = spec.substr(pos + 2);
     return true;
 }
 
-static std::string join_path(const fs::path& a, const fs::path& b)
-{
-    fs::path p = a;
-    p /= b;
-    return p.u8string();
-}
 
-static fs::path default_cache_root(const char* argv0)
+static fs::path get_default_path(const char* argv0)
 {
     std::error_code ec;
     fs::path exe = fs::absolute(argv0, ec);
@@ -69,10 +65,12 @@ static fs::path default_cache_root(const char* argv0)
     return dir / "faust-packages";
 }
 
-static int run_cmd(const std::string& cmd)
+
+static int run_cmd(const std::string&cmd)
 {
     return std::system(cmd.c_str());
 }
+
 
 static bool ensure_dir(const fs::path& p)
 {
@@ -83,7 +81,7 @@ static bool ensure_dir(const fs::path& p)
     return fs::create_directories(p, ec);
 }
 
-static bool copy_tree(const fs::path& src, const fs::path& dst)
+static bool copy_tree(const fs::path&src, const fs::path&dst)
 {
     std::error_code ec;
     if (!fs::exists(src, ec)) {
@@ -94,19 +92,23 @@ static bool copy_tree(const fs::path& src, const fs::path& dst)
     return !ec;
 }
 
+
 static std::string quote(const std::string& s)
 {
     std::string q = "\"" + s + "\"";
     return q;
 }
 
-static bool has_faust_manifest(const fs::path& p)
+
+
+static bool has_faust_manifest(const fs::path&p)
 {
     std::error_code ec;
     return fs::exists(p / "Faust.toml", ec);
 }
 
-static std::string trim(const std::string& s)
+
+static std::string trim(const std::string&s)
 {
     size_t start = s.find_first_not_of(" \t\r\n");
     if (start == std::string::npos) {
@@ -116,13 +118,19 @@ static std::string trim(const std::string& s)
     return s.substr(start, end - start + 1);
 }
 
-static std::string unquote(const std::string& s)
+
+static std::string unquote(const std::string&s)
 {
     if (s.size() >= 2 && ((s.front() == '"' && s.back() == '"') || (s.front() == '\'' && s.back() == '\''))) {
         return s.substr(1, s.size() - 2);
     }
     return s;
 }
+
+
+
+
+
 
 static bool read_faust_toml(const fs::path& p, std::string& name, std::string& version, std::string& entry)
 {
@@ -147,8 +155,9 @@ static bool read_faust_toml(const fs::path& p, std::string& name, std::string& v
             entry = val;
         }
     }
-    return !name.empty() && !version.empty();
+    return !name.empty() && !version.empty()&& !entry.empty();
 }
+
 
 static bool ensure_package_entry(const fs::path& root, const std::string& entry)
 {
@@ -167,16 +176,15 @@ static bool ensure_package_entry(const fs::path& root, const std::string& entry)
     return true;
 }
 
-static int install_pkg(const PkgSpec& spec, const std::string& repo_override,
-                       const fs::path& cache_root)
+
+
+static int install_pkg(const PkgSpec& spec, const fs::path& cache_root)
 {
     fs::path pkg_root = cache_root / spec.name;
     fs::path ver_root = pkg_root / spec.version;
 
     if (fs::exists(ver_root)) {
         std::cout << "already installed: " << spec.name << "==" << spec.version << "\n";
-        // Ensure current pointer
-        copy_tree(ver_root, pkg_root);
         return 0;
     }
 
@@ -185,18 +193,16 @@ static int install_pkg(const PkgSpec& spec, const std::string& repo_override,
         return 1;
     }
 
-    // Build repo URL and repo name
-    std::string repo_path = repo_override.empty()
-        ? (std::string(owner) + "/" + spec.name)
-        : repo_override;
-    std::string repo = std::string(base) + "/" + repo_path;
-    std::string repo_name = repo_path;
-    size_t slash = repo_name.find_last_of('/');
-    if (slash != std::string::npos) {
-        repo_name = repo_name.substr(slash + 1);
+    std::string repo_name = spec.name;
+    for (char& c : repo_name) {
+        if (c == '_') {
+            c = '-';
+        }
     }
+    std::string repo_path = std::string(owner) + "/" + repo_name;
+    std::string repo = std::string(base) + "/" + repo_path;
+    std::string repo_dir = repo_name;
 
-    // Download zip into temp
     fs::path tmp = cache_root / (spec.name + "-tmp");
     std::error_code ec;
     if (fs::exists(tmp, ec)) {
@@ -206,7 +212,7 @@ static int install_pkg(const PkgSpec& spec, const std::string& repo_override,
 
     std::string tag = "v" + spec.version;
     std::string zip_url = repo + "/archive/refs/tags/" + tag + ".zip";
-    fs::path zip_path = tmp / (repo_name + "-" + tag + ".zip");
+    fs::path zip_path = tmp / (repo_dir + "-" + tag + ".zip");
 
     std::cout << "downloading " << zip_url << " ...\n";
     std::stringstream dl;
@@ -227,9 +233,8 @@ static int install_pkg(const PkgSpec& spec, const std::string& repo_override,
         return 1;
     }
 
-    fs::path extracted = tmp / (repo_name + "-" + tag);
+    fs::path extracted = tmp / (repo_dir + "-" + tag);
     if (!has_faust_manifest(extracted)) {
-        // Fallback: find any top-level folder that contains Faust.toml
         fs::path found;
         for (const auto& entry : fs::directory_iterator(tmp)) {
             if (!entry.is_directory()) {
@@ -276,9 +281,6 @@ static int install_pkg(const PkgSpec& spec, const std::string& repo_override,
         fs::remove_all(tmp, ec);
         return 1;
     }
-
-    // Update current pointer by copying version to pkg_root
-    copy_tree(ver_root, pkg_root);
 
     fs::remove_all(tmp, ec);
     std::cout << "installed " << spec.name << "==" << spec.version << "\n";
@@ -327,23 +329,14 @@ int main(int argc, char** argv)
     }
 
     std::string cmd = argv[1];
-    std::string repo_override;
-    fs::path cache_root = default_cache_root(argv[0]);
+    fs::path cache_root = get_default_path(argv[0]);
 
     std::vector<std::string> args;
     for (int i = 2; i < argc; ++i) {
         args.push_back(argv[i]);
     }
 
-    for (size_t i = 0; i < args.size(); ++i) {
-        if (args[i] == "--repo" && i + 1 < args.size()) {
-            repo_override = args[i + 1];
-            i++;
-        } else if (args[i] == "--cache" && i + 1 < args.size()) {
-            cache_root = args[i + 1];
-            i++;
-        }
-    }
+    (void)args;
 
     if (cmd == "install") {
         if (args.empty()) {
@@ -355,7 +348,7 @@ int main(int argc, char** argv)
             std::cerr << "invalid spec, expected name==version\n";
             return 1;
         }
-        return install_pkg(spec, repo_override, cache_root);
+        return install_pkg(spec, cache_root);
     } else if (cmd == "list") {
         return list_pkgs(cache_root);
     } else if (cmd == "remove") {

@@ -1,4 +1,4 @@
-package("test_package");
+package("test_package@1.0");
 
 // User interface
 //----------------
@@ -13,4 +13,3 @@ pink_on  = checkbox("pink noise");
 process = vgroup("Audio Tester",
     x_tester(freq_hz, vol_db, dest_idx, sine_on, white_on, pink_on)
 );
-

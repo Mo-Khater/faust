@@ -1,7 +1,0 @@
-name = "test_package"
-version = "1.0"
-author = "Grame"
-license = "BSD"
-copyright = "(c)GRAME 2006"
-description = "Reusable test-signal helpers"
-entry = "src/test_package.lib"

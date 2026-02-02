@@ -229,13 +229,25 @@ static string resolvePackagePath(const char* pkg)
         root = exepath::dirup(root);
     }
     const string entry = "package.dsp";
+    string pkgstr = pkg ? pkg : "";
+    size_t at = pkgstr.find('@');
+    if (at == string::npos || at == 0 || at + 1 >= pkgstr.size()) {
+        stringstream error;
+        error << "ERROR : invalid package spec '" << pkgstr << "', expected name@version" << endl;
+        throw faustexception(error.str());
+    }
+    string name = pkgstr.substr(0, at);
+    string ver = pkgstr.substr(at + 1);
+
     string path = root;
     if (!path.empty() && path.back() != '/' && path.back() != '\\') {
         path += '/';
     }
     path += "faust-packages";
     path += '/';
-    path += pkg;
+    path += name;
+    path += '/';
+    path += ver;
     path += '/';
     path += entry;
     return path;
